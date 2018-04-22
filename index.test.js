@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 const withSubscribe = require('./index')
 
 it('works with object', () => {
@@ -7,7 +9,9 @@ it('works with object', () => {
   })
 
   let subscribeCalls = 0
-  foo.subscribe(() => subscribeCalls += 1)
+  foo.subscribe(() => {
+    subscribeCalls += 1
+  })
 
   foo.a = 3
   foo.b = 4
@@ -19,7 +23,7 @@ it('works with object', () => {
 
 it('works with class', () => {
   class Foo {
-    constructor(a, b) {
+    constructor (a, b) {
       this.a = a
       this.b = b
     }
@@ -28,7 +32,9 @@ it('works with class', () => {
   const foo = new FooSubscribable(1, 2)
 
   let subscribeCalls = 0
-  foo.subscribe(() => subscribeCalls += 1)
+  foo.subscribe(() => {
+    subscribeCalls += 1
+  })
 
   foo.a = 3
   foo.b = 4
