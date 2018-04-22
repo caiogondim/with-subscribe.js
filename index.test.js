@@ -43,3 +43,26 @@ it('works with class', () => {
   expect(foo.b).toEqual(4)
   expect(subscribeCalls).toEqual(2)
 })
+
+it('works as decorator', () => {
+  @withSubscribe
+  class Foo {
+    constructor (a, b) {
+      this.a = a
+      this.b = b
+    }
+  }
+  const foo = new Foo(1, 2)
+
+  let subscribeCalls = 0
+  foo.subscribe(() => {
+    subscribeCalls += 1
+  })
+
+  foo.a = 3
+  foo.b = 4
+
+  expect(foo.a).toEqual(3)
+  expect(foo.b).toEqual(4)
+  expect(subscribeCalls).toEqual(2)
+})
