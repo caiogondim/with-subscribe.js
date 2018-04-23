@@ -1,2 +1,2 @@
-- test unsubscribe
 - implement observable symbol
+- add sponsor section on readme (bitcoin)
