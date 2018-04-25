@@ -110,7 +110,7 @@ it('throws error if subscribe property already exists in target', () => {
   expect(createObservableObj).toThrowError()
 })
 
-it('should set subscribe method as non-enumerable', () => {
+it('sets subscribe method as non-enumerable', () => {
   const foo = withSubscribe({
     a: 1,
     b: 2
@@ -123,7 +123,7 @@ it('should set subscribe method as non-enumerable', () => {
 
 // Tests adapted from https://github.com/reactjs/redux/blob/4e5f7ef3569e9ef6d02f7b3043b290dc093c853b/test/createStore.spec.js#L613
 describe('Symbol.observable interop point', () => {
-  it('should exist', () => {
+  it('exists', () => {
     const foo = withSubscribe({
       a: 1,
       b: 2
@@ -132,7 +132,7 @@ describe('Symbol.observable interop point', () => {
   })
 
   describe('returned value', () => {
-    it('should be subscribable', () => {
+    it('is subscribable', () => {
       const foo = withSubscribe({
         a: 1,
         b: 2
@@ -141,7 +141,7 @@ describe('Symbol.observable interop point', () => {
       expect(typeof obs.subscribe).toBe('function')
     })
 
-    it('should throw a TypeError if an observer object is not supplied to subscribe', () => {
+    it('throws a TypeError if an observer object is not supplied to subscribe', () => {
       const foo = withSubscribe({
         a: 1,
         b: 2
@@ -165,7 +165,7 @@ describe('Symbol.observable interop point', () => {
       }).not.toThrow()
     })
 
-    it('should return a subscription object when subscribed', () => {
+    it('returns a subscription object when subscribed', () => {
       const foo = withSubscribe({
         a: 1,
         b: 2
@@ -176,7 +176,7 @@ describe('Symbol.observable interop point', () => {
     })
   })
 
-  it('should pass an integration test with no unsubscribe', () => {
+  it('passes an integration test with no unsubscribe', () => {
     const foo = withSubscribe({
       a: 1,
       b: 2
@@ -200,7 +200,7 @@ describe('Symbol.observable interop point', () => {
     ])
   })
 
-  it('should pass an integration test with an unsubscribe', () => {
+  it('passes an integration test with an unsubscribe', () => {
     const foo = withSubscribe({
       a: 1,
       b: 2
@@ -224,7 +224,7 @@ describe('Symbol.observable interop point', () => {
     ])
   })
 
-  it('should pass an integration test with a common library (RxJS)', () => {
+  it('passes an integration test with a common library (RxJS)', () => {
     const foo = withSubscribe({
       a: 1,
       b: 2
