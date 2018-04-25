@@ -9,29 +9,32 @@ const typeFrom = require('type-from')
  * https://github.com/tc39/proposal-observable
  */
 function implementObservableInterface (target) {
-  target[$$observable] = function () {
-    return ({
-      subscribe (observer) {
-        if (typeof observer !== 'object' || observer === null) {
-          throw new TypeError('Expected the observer to be an object.')
-        }
-
-        function observeState () {
-          if (observer.next) {
-            observer.next(target)
+  Object.defineProperty(target, $$observable, {
+    enumerable: false,
+    value: function () {
+      return ({
+        subscribe (observer) {
+          if (typeof observer !== 'object' || observer === null) {
+            throw new TypeError('Expected the observer to be an object.')
           }
+
+          function observeState () {
+            if (observer.next) {
+              observer.next(target)
+            }
+          }
+
+          observeState()
+          const unsubscribe = target.subscribe(observeState)
+          return { unsubscribe }
+        },
+
+        [$$observable] () {
+          return this
         }
-
-        observeState()
-        const unsubscribe = target.subscribe(observeState)
-        return { unsubscribe }
-      },
-
-      [$$observable] () {
-        return this
-      }
-    })
-  }
+      })
+    }
+  })
 
   return target
 }
@@ -43,13 +46,16 @@ function implementSubscribeInterface (target) {
     throw new Error('A subscribe property is already present on target object')
   }
 
-  target.subscribe = callback => {
-    subscribers.push(callback)
+  Object.defineProperty(target, 'subscribe', {
+    enumerable: false,
+    value: callback => {
+      subscribers.push(callback)
 
-    return () => {
-      subscribers = subscribers.filter(subscriber => subscriber !== callback)
+      return () => {
+        subscribers = subscribers.filter(subscriber => subscriber !== callback)
+      }
     }
-  }
+  })
 
   return new Proxy(target, {
     set (target_, key, value) {

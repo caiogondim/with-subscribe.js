@@ -1,8 +1,9 @@
 /* eslint-env jest */
 
-const withSubscribe = require('./index')
-const Rx = require('rxjs')
 const $$observable = require('symbol-observable').default
+const typeFrom = require('type-from')
+const Rx = require('rxjs')
+const withSubscribe = require('./index')
 
 it('works with object', () => {
   const foo = withSubscribe({
@@ -109,6 +110,17 @@ it('throws error if subscribe property already exists in target', () => {
   expect(createObservableObj).toThrowError()
 })
 
+it('should set subscribe method as non-enumerable', () => {
+  const foo = withSubscribe({
+    a: 1,
+    b: 2
+  })
+
+  expect(Object.values(foo)).toEqual([1, 2])
+  expect(Object.keys(foo)).toEqual(['a', 'b'])
+  expect(typeFrom(foo.subscribe)).toEqual('function')
+})
+
 // Tests adapted from https://github.com/reactjs/redux/blob/4e5f7ef3569e9ef6d02f7b3043b290dc093c853b/test/createStore.spec.js#L613
 describe('Symbol.observable interop point', () => {
   it('should exist', () => {
@@ -174,10 +186,7 @@ describe('Symbol.observable interop point', () => {
 
     observable.subscribe({
       next (observed) {
-        results.push({
-          a: observed.a,
-          b: observed.b
-        })
+        results.push({ ...observed })
       }
     })
 
@@ -201,10 +210,7 @@ describe('Symbol.observable interop point', () => {
 
     const sub = observable.subscribe({
       next (observed) {
-        results.push({
-          a: observed.a,
-          b: observed.b
-        })
+        results.push({ ...observed })
       }
     })
 
@@ -229,8 +235,7 @@ describe('Symbol.observable interop point', () => {
     const sub = observable
       .map(snapshot => ({
         fromRx: true,
-        a: snapshot.a,
-        b: snapshot.b
+        ...snapshot
       }))
       .subscribe(snapshot => results.push(snapshot))
 
