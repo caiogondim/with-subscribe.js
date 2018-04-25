@@ -70,55 +70,57 @@ it('works as decorator', () => {
   expect(subscribeCalls).toEqual(2)
 })
 
-it('returns unsubscribe function', () => {
-  const foo = withSubscribe({
-    a: 1,
-    b: 2
+describe('subscribe method', () => {
+  it('throws error if subscribe property already exists in target', () => {
+    function createObservableObj () {
+      return withSubscribe({
+        a: 1,
+        b: 2,
+        subscribe () {}
+      })
+    }
+
+    expect(createObservableObj).toThrowError()
   })
 
-  let subscribeCalls = 0
-  const unsubscribe = foo.subscribe(() => {
-    subscribeCalls += 1
-  })
-
-  foo.a = 3
-  foo.b = 4
-
-  expect(foo.a).toEqual(3)
-  expect(foo.b).toEqual(4)
-  expect(subscribeCalls).toEqual(2)
-
-  unsubscribe()
-
-  foo.a = 5
-  foo.b = 6
-
-  expect(foo.a).toEqual(5)
-  expect(foo.b).toEqual(6)
-  expect(subscribeCalls).toEqual(2)
-})
-
-it('throws error if subscribe property already exists in target', () => {
-  function createObservableObj () {
-    return withSubscribe({
+  it('is non-enumerable', () => {
+    const foo = withSubscribe({
       a: 1,
-      b: 2,
-      subscribe () {}
+      b: 2
     })
-  }
 
-  expect(createObservableObj).toThrowError()
-})
-
-it('sets subscribe method as non-enumerable', () => {
-  const foo = withSubscribe({
-    a: 1,
-    b: 2
+    expect(Object.values(foo)).toEqual([1, 2])
+    expect(Object.keys(foo)).toEqual(['a', 'b'])
+    expect(typeFrom(foo.subscribe)).toEqual('function')
   })
 
-  expect(Object.values(foo)).toEqual([1, 2])
-  expect(Object.keys(foo)).toEqual(['a', 'b'])
-  expect(typeFrom(foo.subscribe)).toEqual('function')
+  it('returns unsubscribe function', () => {
+    const foo = withSubscribe({
+      a: 1,
+      b: 2
+    })
+
+    let subscribeCalls = 0
+    const unsubscribe = foo.subscribe(() => {
+      subscribeCalls += 1
+    })
+
+    foo.a = 3
+    foo.b = 4
+
+    expect(foo.a).toEqual(3)
+    expect(foo.b).toEqual(4)
+    expect(subscribeCalls).toEqual(2)
+
+    unsubscribe()
+
+    foo.a = 5
+    foo.b = 6
+
+    expect(foo.a).toEqual(5)
+    expect(foo.b).toEqual(6)
+    expect(subscribeCalls).toEqual(2)
+  })
 })
 
 // Tests adapted from https://github.com/reactjs/redux/blob/4e5f7ef3569e9ef6d02f7b3043b290dc093c853b/test/createStore.spec.js#L613
