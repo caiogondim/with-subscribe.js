@@ -1,14 +1,18 @@
 {
-  "name": "t",
+  "name": "with-subscribe",
   "version": "1.0.0",
-  "description": "",
+  "description": "Minimal Observable interface to watch for object modifications.",
   "main": "index.js",
   "scripts": {
     "test": "jest && standard --fix"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "observable",
+    "subscribe",
+    "reactive"
+  ],
+  "author": "Caio Gondim",
+  "license": "MIT",
   "devDependencies": {
     "babel-core": "6.26.0",
     "babel-eslint": "8.2.3",
