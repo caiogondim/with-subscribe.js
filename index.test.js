@@ -97,6 +97,18 @@ it('returns unsubscribe function', () => {
   expect(subscribeCalls).toEqual(2)
 })
 
+it('throws error if subscribe property already exists in target', () => {
+  function createObservableObj () {
+    return withSubscribe({
+      a: 1,
+      b: 2,
+      subscribe () {}
+    })
+  }
+
+  expect(createObservableObj).toThrowError()
+})
+
 // Tests adapted from https://github.com/reactjs/redux/blob/4e5f7ef3569e9ef6d02f7b3043b290dc093c853b/test/createStore.spec.js#L613
 describe('Symbol.observable interop point', () => {
   it('should exist', () => {

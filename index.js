@@ -39,6 +39,10 @@ function implementObservableInterface (target) {
 function implementSubscribeInterface (target) {
   let subscribers = []
 
+  if (target.subscribe !== undefined) {
+    throw new Error('A subscribe property is already present on target object')
+  }
+
   target.subscribe = callback => {
     subscribers.push(callback)
 
