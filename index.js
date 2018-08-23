@@ -6,6 +6,22 @@ function isPrimitive (value) {
   return value === null || (typeof value !== 'function' && typeof value !== 'object')
 }
 
+function applyProxyRecursively (target, rootProxy, subscribers) {
+  Object
+    .keys(target)
+    .filter(key => !isPrimitive(target[key]))
+    .forEach(key => {
+      applyProxyRecursively(target[key], rootProxy, subscribers)
+      target[key] = new Proxy(target[key], {
+        set (target_, key, value) {
+          target_[key] = value
+          subscribers.forEach(subscriber => subscriber(rootProxy))
+          return true
+        }
+      })
+    })
+}
+
 /**
  * Interoperability point for observable/reactive libraries.
  * @returns {observable} A minimal observable of state changes.
@@ -69,18 +85,7 @@ function implementSubscribeInterface (target) {
     }
   })
 
-  Object
-    .keys(target)
-    .filter(key => !isPrimitive(target[key]))
-    .forEach(key => {
-      target[key] = new Proxy(target[key], {
-        set (target_, key, value) {
-          target_[key] = value
-          subscribers.forEach(subscriber => subscriber(rootProxy))
-          return true
-        }
-      })
-    })
+  applyProxyRecursively(target, rootProxy, subscribers)
 
   return rootProxy
 }

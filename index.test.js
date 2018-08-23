@@ -74,7 +74,11 @@ it('works with nested object properties', () => {
   const foo = withSubscribe({
     a: 1,
     b: {
-      c: 2
+      c: {
+        d: {
+          e: 2
+        }
+      }
     }
   })
 
@@ -84,13 +88,11 @@ it('works with nested object properties', () => {
   })
 
   foo.a = 3
-  foo.b.c = 4
-  foo.b.d = 5
+  foo.b.c.d.e = 4
 
   expect(foo.a).toEqual(3)
-  expect(foo.b.c).toEqual(4)
-  expect(foo.b.d).toEqual(5)
-  expect(subscribeCalls).toEqual(3)
+  expect(foo.b.c.d.e).toEqual(4)
+  expect(subscribeCalls).toEqual(2)
 })
 
 describe('subscribe method', () => {
