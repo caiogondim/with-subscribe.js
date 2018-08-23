@@ -70,6 +70,29 @@ it('works as decorator', () => {
   expect(subscribeCalls).toEqual(2)
 })
 
+it('works with nested object properties', () => {
+  const foo = withSubscribe({
+    a: 1,
+    b: {
+      c: 2
+    }
+  })
+
+  let subscribeCalls = 0
+  foo.subscribe(() => {
+    subscribeCalls += 1
+  })
+
+  foo.a = 3
+  foo.b.c = 4
+  foo.b.d = 5
+
+  expect(foo.a).toEqual(3)
+  expect(foo.b.c).toEqual(4)
+  expect(foo.b.d).toEqual(5)
+  expect(subscribeCalls).toEqual(3)
+})
+
 describe('subscribe method', () => {
   it('throws error if subscribe property already exists in target', () => {
     function createObservableObj () {

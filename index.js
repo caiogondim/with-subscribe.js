@@ -2,6 +2,10 @@ const $$observable = require('symbol-observable').default
 const pipe = require('tubo')
 const typeFrom = require('type-from')
 
+function isPrimitive (value) {
+  return value === null || (typeof value !== 'function' && typeof value !== 'object')
+}
+
 /**
  * Interoperability point for observable/reactive libraries.
  * @returns {observable} A minimal observable of state changes.
@@ -57,13 +61,28 @@ function implementSubscribeInterface (target) {
     }
   })
 
-  return new Proxy(target, {
+  const rootProxy = new Proxy(target, {
     set (target_, key, value) {
       target_[key] = value
-      subscribers.forEach(subscriber => subscriber(target_))
+      subscribers.forEach(subscriber => subscriber(rootProxy))
       return true
     }
   })
+
+  Object
+    .keys(target)
+    .filter(key => !isPrimitive(target[key]))
+    .forEach(key => {
+      target[key] = new Proxy(target[key], {
+        set (target_, key, value) {
+          target_[key] = value
+          subscribers.forEach(subscriber => subscriber(rootProxy))
+          return true
+        }
+      })
+    })
+
+  return rootProxy
 }
 
 function withSubscribe (target) {

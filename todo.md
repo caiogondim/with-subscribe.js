@@ -1,2 +1,1 @@
 - add sponsor section on readme (bitcoin)
-- set subscribe as non-enumerable
