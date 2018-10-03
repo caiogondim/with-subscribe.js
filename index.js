@@ -80,7 +80,13 @@ function implementSubscribeInterface (target) {
   const rootProxy = new Proxy(target, {
     set (target_, key, value) {
       target_[key] = value
-      subscribers.forEach(subscriber => subscriber(rootProxy))
+      subscribers.forEach(subscriber => {
+        if (typeof subscriber === 'function') {
+          subscriber(rootProxy)
+        } else if (typeof subscriber.next === 'function') {
+          subscriber.next(rootProxy)
+        }
+      })
       return true
     }
   })
