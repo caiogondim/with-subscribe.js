@@ -4,7 +4,9 @@
   "description": "Minimal Observable interface to watch for object modifications.",
   "main": "index.js",
   "scripts": {
-    "test": "jest && standard --fix"
+    "test": "jest",
+    "test:all": "jest && standard --fix",
+    "lint": "standard --fix"
   },
   "keywords": [
     "observable",

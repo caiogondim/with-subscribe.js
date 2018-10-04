@@ -21,7 +21,7 @@ it('works with object', () => {
 
   expect(foo.a).toEqual(3)
   expect(foo.b).toEqual(4)
-  expect(subscribeCalls).toEqual(2)
+  expect(subscribeCalls).toEqual(3)
 })
 
 it('works with class', () => {
@@ -44,7 +44,7 @@ it('works with class', () => {
 
   expect(foo.a).toEqual(3)
   expect(foo.b).toEqual(4)
-  expect(subscribeCalls).toEqual(2)
+  expect(subscribeCalls).toEqual(3)
 })
 
 it('works as decorator', () => {
@@ -67,7 +67,7 @@ it('works as decorator', () => {
 
   expect(foo.a).toEqual(3)
   expect(foo.b).toEqual(4)
-  expect(subscribeCalls).toEqual(2)
+  expect(subscribeCalls).toEqual(3)
 })
 
 it('works with nested object properties', () => {
@@ -92,7 +92,7 @@ it('works with nested object properties', () => {
 
   expect(foo.a).toEqual(3)
   expect(foo.b.c.d.e).toEqual(4)
-  expect(subscribeCalls).toEqual(2)
+  expect(subscribeCalls).toEqual(3)
 })
 
 describe('subscribe method', () => {
@@ -119,32 +119,34 @@ describe('subscribe method', () => {
     expect(typeFrom(foo.subscribe)).toEqual('function')
   })
 
-  it('returns unsubscribe function', () => {
+  it('returns subscription object', () => {
     const foo = withSubscribe({
       a: 1,
       b: 2
     })
 
     let subscribeCalls = 0
-    const unsubscribe = foo.subscribe(() => {
+    const subscription = foo.subscribe(() => {
       subscribeCalls += 1
     })
+    expect(typeof subscription).toEqual('object')
+    expect(typeof subscription.unsubscribe).toEqual('function')
 
     foo.a = 3
     foo.b = 4
 
     expect(foo.a).toEqual(3)
     expect(foo.b).toEqual(4)
-    expect(subscribeCalls).toEqual(2)
+    expect(subscribeCalls).toEqual(3)
 
-    unsubscribe()
+    subscription.unsubscribe()
 
     foo.a = 5
     foo.b = 6
 
     expect(foo.a).toEqual(5)
     expect(foo.b).toEqual(6)
-    expect(subscribeCalls).toEqual(2)
+    expect(subscribeCalls).toEqual(3)
   })
 })
 
@@ -166,30 +168,6 @@ describe('Symbol.observable interop point', () => {
       })
       const obs = foo[$$observable]()
       expect(typeof obs.subscribe).toBe('function')
-    })
-
-    it('throws a TypeError if an observer object is not supplied to subscribe', () => {
-      const foo = withSubscribe({
-        a: 1,
-        b: 2
-      })
-      const obs = foo[$$observable]()
-
-      expect(function () {
-        obs.subscribe()
-      }).toThrowError(new TypeError('Expected the observer to be an object.'))
-
-      expect(function () {
-        obs.subscribe(null)
-      }).toThrowError(new TypeError('Expected the observer to be an object.'))
-
-      expect(function () {
-        obs.subscribe(() => {})
-      }).toThrowError(new TypeError('Expected the observer to be an object.'))
-
-      expect(function () {
-        obs.subscribe({})
-      }).not.toThrow()
     })
 
     it('returns a subscription object when subscribed', () => {

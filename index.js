@@ -15,7 +15,13 @@ function applyProxyRecursively (target, rootProxy, subscribers) {
       target[key] = new Proxy(target[key], {
         set (target_, key, value) {
           target_[key] = value
-          subscribers.forEach(subscriber => subscriber(rootProxy))
+          subscribers.forEach(subscriber => {
+            if (typeof subscriber === 'function') {
+              subscriber(rootProxy)
+            } else if (typeof subscriber.next === 'function') {
+              subscriber.next(rootProxy)
+            }
+          })
           return true
         }
       })
@@ -33,21 +39,7 @@ function implementObservableInterface (target) {
     enumerable: false,
     value: function () {
       return ({
-        subscribe (observer) {
-          if (typeof observer !== 'object' || observer === null) {
-            throw new TypeError('Expected the observer to be an object.')
-          }
-
-          function observeState () {
-            if (observer.next) {
-              observer.next(target)
-            }
-          }
-
-          observeState()
-          const unsubscribe = target.subscribe(observeState)
-          return { unsubscribe }
-        },
+        subscribe: target.subscribe,
 
         [$$observable] () {
           return this
@@ -66,17 +58,6 @@ function implementSubscribeInterface (target) {
     throw new Error('A subscribe property is already present on target object')
   }
 
-  Object.defineProperty(target, 'subscribe', {
-    enumerable: false,
-    value: callback => {
-      subscribers.push(callback)
-
-      return () => {
-        subscribers = subscribers.filter(subscriber => subscriber !== callback)
-      }
-    }
-  })
-
   const rootProxy = new Proxy(target, {
     set (target_, key, value) {
       target_[key] = value
@@ -88,6 +69,25 @@ function implementSubscribeInterface (target) {
         }
       })
       return true
+    }
+  })
+
+  Object.defineProperty(target, 'subscribe', {
+    enumerable: false,
+    value: callback => {
+      subscribers.push(callback)
+
+      if (typeof callback === 'function') {
+        callback(rootProxy)
+      } else if (typeof callback.next === 'function') {
+        callback.next(rootProxy)
+      }
+
+      return {
+        unsubscribe: () => {
+          subscribers = subscribers.filter(subscriber => subscriber !== callback)
+        }
+      }
     }
   })
 
