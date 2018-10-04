@@ -30,10 +30,10 @@ class Counter {
 const CounterWithSubscribe = withSubscribe(Counter)
 const counter = new CounterWithSubscribe()
 
-counter.subscribe(() => console.log('Change:', counter.count))
+counter.subscribe(() => console.log('State:', counter.count)) // -> State: 0
 
-counter.increment() // -> Change: 1
-counter.increment() // -> Change: 2
+counter.increment() // -> State: 1
+counter.increment() // -> State: 2
 ```
 
 As a decorator:
@@ -50,10 +50,10 @@ class Counter {
 }
 const counter = new Counter()
 
-counter.subscribe(() => console.log('Change:', counter.count))
+counter.subscribe(() => console.log('State:', counter.count)) // -> State: 0
 
-counter.increment() // -> Change: 1
-counter.increment() // -> Change: 2
+counter.increment() // -> State: 1
+counter.increment() // -> State: 2
 ```
 
 On an object:
@@ -65,10 +65,10 @@ const counter = withSubscribe({
   }
 })
 
-counter.subscribe(() => console.log('Change:', counter.count))
+counter.subscribe(() => console.log('State:', counter.count)) // -> State: 0
 
-counter.increment() // -> Change: 1
-counter.increment() // -> Change: 2
+counter.increment() // -> State: 1
+counter.increment() // -> State: 2
 ```
 
 ---
